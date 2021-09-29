@@ -5,82 +5,51 @@ import org.springframework.stereotype.Service;
 import com.mastery.java.task.dao.EmployeeDao;
 import com.mastery.java.task.dto.Employee;
 import com.mastery.java.task.service.exception.EmployeeServiceException;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+@Slf4j
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
 	@Autowired
 	private EmployeeDao employeeDao;
-	@Autowired
-	private EmployeeValidator employeeValidator;
 
 	@Override
-	public List<Employee> getAll() {
+	public Optional<Employee> getById(long id) {
+		return Optional.ofNullable(employeeDao.findById(id)
+				.orElseThrow(() -> new EmployeeServiceException("Employee is not found, id=" + id)));
+	}
+
+	@Override
+	public Employee update(long id, Employee employee) {
+		if (!employeeDao.existsById(id)) {
+			log.error("Employee is not found, id=" + id);
+			throw new EmployeeServiceException("Employee is not found, id=" + id);
+		} 
+		return employeeDao.save(employee);
+		
+	}
+
+	@Override
+	public void delete(long id) {
+		if (employeeDao.existsById(id)) {
+			employeeDao.deleteById(id);
+		} else {
+			log.error("Employee is not found, id=" + id);
+			throw new EmployeeServiceException("Employee is not found, id=" + id);
+		}
+
+	}
+
+	@Override
+	public Iterable<Employee> getAll() {
 		return employeeDao.findAll();
 	}
 
 	@Override
-	public Employee getById(String employeeId) {
-
-		if (!employeeValidator.isNumber(employeeId) || 
-				!employeeValidator.isExist(Integer.parseInt(employeeId))) {
-			
-			EmployeeServiceException employeeServiceException = new EmployeeServiceException(
-					String.format(employeeValidator.getMessage(), employeeId));
-			log.error(employeeServiceException.getMessage());
-			throw employeeServiceException;
-		}
-		return employeeDao.findById(Integer.parseInt(employeeId));
-	}
-
-	@Override
 	public Employee create(Employee employee) {
-		
-		if (!employeeValidator.isCorrect(employee)) {
-			
-			EmployeeServiceException employeeServiceException = new EmployeeServiceException(
-					employeeValidator.getMessage());
-			log.error(employeeServiceException.getMessage());
-			throw employeeServiceException;
-		}
 		return employeeDao.save(employee);
-	}
-
-	@Override
-	public Employee update(String employeeId, Employee employee) {
-
-		if (!employeeValidator.isNumber(employeeId) || 
-				!employeeValidator.isCorrect(employee)|| 
-				!employeeValidator.isExist(Integer.parseInt(employeeId))) {
-			
-			EmployeeServiceException employeeServiceException = new EmployeeServiceException(
-					String.format(employeeValidator.getMessage(), employeeId));
-			log.error(employeeServiceException.getMessage());
-			throw employeeServiceException;
-		}
-
-	
-		employee.setEmployeeId(Integer.parseInt(employeeId));
-		return employeeDao.update(employee);
-	}
-
-	@Override
-	public int delete(String employeeId) {
-		if (!employeeValidator.isNumber(employeeId) || 
-				!employeeValidator.isExist(Integer.parseInt(employeeId))) {
-			
-			EmployeeServiceException employeeServiceException = new EmployeeServiceException(
-					String.format(employeeValidator.getMessage(), employeeId));
-			log.error(employeeServiceException.getMessage());
-			throw employeeServiceException;
-		}
-		return employeeDao.deleteById(Integer.parseInt(employeeId));
 	}
 
 }

@@ -1,142 +1,74 @@
 package com.mastery.java.task.dto;
 
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import com.mastery.java.task.dto.annatation.EmployeeAgeConstraint;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@ToString
+@EqualsAndHashCode
+@Getter
+@Setter 
+@AllArgsConstructor
+@Table(name = "employee")
 public class Employee {
 
-	private int employeeId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long employeeId;
+
+	@Column(name = "first_name")
+	@NotEmpty(message = "Please provide a first name")
 	private String firstName;
+
+	@Column(name = "last_name")
+	@NotEmpty(message = "Please provide a last name")
 	private String lastName;
+
+	@Column(name = "department_id")
+	@NotNull(message = "Please provide a number of department")
 	private Long departmentId;
+
+	@Column(name = "job_title")
+	@NotEmpty(message = "Please provide a job title")
 	private String jobTitle;
-	private Gender gender;	
 
-	public Employee() {
-		super();
-	}
-
-	public Employee(int employeeId, String firstName, String lastName, Long departmentId, String jobTitle,
-			Gender gender) {
-		super();
-		this.employeeId = employeeId;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.departmentId = departmentId;
-		this.jobTitle = jobTitle;
-		this.gender = gender;
-	}
-
-	public int getEmployeeId() {
-		return employeeId;
-	}
-
-	public void setEmployeeId(int employeeId) {
-		this.employeeId = employeeId;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public Long getDepartmentId() {
-		return departmentId;
-	}
-
-	public void setDepartmentId(Long departmentId) {
-		this.departmentId = departmentId;
-	}
-
-	public String getJobTitle() {
-		return jobTitle;
-	}
-
-	public void setJobTitle(String jobTitle) {
-		this.jobTitle = jobTitle;
-	}
-
-	public Gender getGender() {
-		return gender;
-	}
-
-	public void setGender(Gender gender) {
-		this.gender = gender;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((departmentId == null) ? 0 : departmentId.hashCode());
-		result = prime * result + employeeId;
-		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
-		result = prime * result + ((jobTitle == null) ? 0 : jobTitle.hashCode());
-		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Employee other = (Employee) obj;
-		if (departmentId == null) {
-			if (other.departmentId != null)
-				return false;
-		} else if (!departmentId.equals(other.departmentId))
-			return false;
-		if (employeeId != other.employeeId)
-			return false;
-		if (firstName == null) {
-			if (other.firstName != null)
-				return false;
-		} else if (!firstName.equals(other.firstName))
-			return false;
-		if (gender != other.gender)
-			return false;
-		if (jobTitle == null) {
-			if (other.jobTitle != null)
-				return false;
-		} else if (!jobTitle.equals(other.jobTitle))
-			return false;
-		if (lastName == null) {
-			if (other.lastName != null)
-				return false;
-		} else if (!lastName.equals(other.lastName))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Employee [employeeId=" + employeeId + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", departmentId=" + departmentId + ", jobTitle=" + jobTitle + ", gender=" + gender + "]";
-	}
+	@Column(name = "gender")
+	@NotNull(message = "Please provide a gender")
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
+	
+	@Column(name = "date_birth")
+	@Past
+	@EmployeeAgeConstraint (message = "The employee must be over 18")
+	private LocalDate dateBirth;
 
 	public static class Builder {
 
-		private int employeeId;
+		private long employeeId;
 		private String firstName;
 		private String lastName;
 		private Long departmentId;
 		private String jobTitle;
-		private Gender gender;	
-
-		public Builder setEmployeeId(int employeeId) {
+		private Gender gender;
+		private LocalDate dateBirth;
+		
+		public Builder setEmployeeId(long employeeId) {
 			this.employeeId = employeeId;
 			return this;
 		}
@@ -165,9 +97,15 @@ public class Employee {
 			this.gender = gender;
 			return this;
 		}
+		public Builder setDateBirth(LocalDate dateBirth) {
+			this.dateBirth =dateBirth;
+			return this;
+		}
 
-        public Employee build(){
-            return new Employee(employeeId, firstName, lastName, departmentId, jobTitle, gender);
-        }
-    }
+		public Employee build() {
+			return new Employee(employeeId, firstName, lastName, departmentId, jobTitle, gender, dateBirth);
+		}
+	}
+
+	
 }
