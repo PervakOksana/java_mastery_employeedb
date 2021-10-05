@@ -6,5 +6,7 @@ import com.mastery.java.task.dto.Employee;
 
 @Repository
 public interface EmployeeDao extends CrudRepository<Employee, Long>{
+	
+	
 
 }

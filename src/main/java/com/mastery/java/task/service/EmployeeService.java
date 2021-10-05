@@ -15,6 +15,10 @@ public interface EmployeeService {
 	Employee update(long id, Employee employee);
 
 	void delete(long id);
+	
+	Iterable<Employee> findAllByFirstName(String firstName);
+	
+	Iterable<Employee> findAllByLastName(String lastName);
 
 
 }

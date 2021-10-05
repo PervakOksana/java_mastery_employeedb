@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import com.mastery.java.task.dto.Employee;
 import com.mastery.java.task.service.EmployeeServiceImpl;
-import java.util.Optional;
 import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,34 +26,47 @@ public class EmployeeController {
 	private EmployeeServiceImpl employeeService;
 
 	@GetMapping
-	public Iterable<Employee> getAllEmployees() {
-		log.info("Trying to get employee list");
-		
-		return employeeService.getAll();
+	public ResponseEntity<Iterable<Employee>> getAllEmployees() {
+		log.info("Trying to get employee list");		
+		return ResponseEntity.ok().body(employeeService.getAll());
 	}
 
 	@GetMapping("/{employeeId}")
-	public Optional<Employee> getEmployeeById(@Valid @PathVariable("employeeId") long employeeId) {
+	public ResponseEntity<Employee> getEmployeeById(@Valid @PathVariable long employeeId) {
+		
+		System.out.println("getEmployeeById");
 		log.info("Trying to get employee by id {}", employeeId);
-		return employeeService.getById(employeeId);
+		return ResponseEntity.ok().body(employeeService.getById(employeeId).get());
+	}
+	
+	@GetMapping("/first/{firstName}")
+	public ResponseEntity<Iterable<Employee>> getEmployeeByFirstName(@Valid @PathVariable String firstName) {
+		log.info("Trying to find employee by first name {}", firstName);
+		return ResponseEntity.ok().body(employeeService.findAllByFirstName(firstName));
+	}
+	
+	@GetMapping("/last/{lastName}")
+	public ResponseEntity<Iterable<Employee>> getEmployeeByLastName(@Valid @PathVariable String lastName) {
+		log.info("Trying to find employee by last name {}", lastName);
+		return ResponseEntity.ok().body(employeeService.findAllByLastName(lastName));
 	}
 
 	@PostMapping
-	public Employee createEmployee(@Valid @RequestBody Employee employee) {
-		log.info("Trying to post {}", employee);
-		return employeeService.create(employee);	 
+	public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
+		log.info("Trying to post {}", employee.toString());
+		return ResponseEntity.status(201).body(employeeService.create(employee));	 
 	}
 
 	@PutMapping("/{employeeId}")
-	public Employee updateEmployee(@Valid @PathVariable("employeeId") long employeeId,
+	public ResponseEntity<Employee> updateEmployee(@Valid @PathVariable  long employeeId,
 			 @RequestBody @Valid Employee employee) {
 		log.info("Trying to put employee by id {}", employeeId);
-		return employeeService.update(employeeId, employee);
+		return ResponseEntity.ok().body(employeeService.update(employeeId, employee));
 		
 	}
 
 	@DeleteMapping("/{employeeId}")
-	public ResponseEntity<Void> deleteEmployee(@Valid @PathVariable("employeeId") long employeeId) {
+	public ResponseEntity<Void> deleteEmployee(@Valid @PathVariable long employeeId) {
 		log.info("Trying to delete employee by id {}", employeeId);
 		employeeService.delete(employeeId);
 		return ResponseEntity.ok().build();

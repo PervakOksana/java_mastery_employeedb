@@ -16,6 +16,7 @@ import com.mastery.java.task.dto.annatation.EmployeeAgeConstraint;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -25,11 +26,12 @@ import lombok.ToString;
 @Getter
 @Setter 
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "employee")
 public class Employee {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long employeeId;
 
 	@Column(name = "first_name")
@@ -54,7 +56,7 @@ public class Employee {
 	private Gender gender;
 	
 	@Column(name = "date_birth")
-	@Past
+	@Past(message = "The date must be past")
 	@EmployeeAgeConstraint (message = "The employee must be over 18")
 	private LocalDate dateBirth;
 
