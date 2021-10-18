@@ -11,8 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import com.mastery.java.task.dto.annatation.EmployeeAgeConstraint;
+
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,7 +25,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @Getter
-@Setter 
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "employee")
@@ -36,28 +37,33 @@ public class Employee {
 
 	@Column(name = "first_name")
 	@NotEmpty(message = "Please provide a first name")
+	@ApiModelProperty(value = "first name of the employee")
 	private String firstName;
 
 	@Column(name = "last_name")
 	@NotEmpty(message = "Please provide a last name")
+	@ApiModelProperty(value = "last name of the employee")
 	private String lastName;
 
 	@Column(name = "department_id")
 	@NotNull(message = "Please provide a number of department")
+	@ApiModelProperty(value = "departmentId of the employee")
 	private Long departmentId;
 
 	@Column(name = "job_title")
 	@NotEmpty(message = "Please provide a job title")
+	@ApiModelProperty(value = "job title of the employee")
 	private String jobTitle;
 
 	@Column(name = "gender")
 	@NotNull(message = "Please provide a gender")
 	@Enumerated(EnumType.STRING)
+	@ApiModelProperty(value = "gender of the employee")
 	private Gender gender;
-	
+
 	@Column(name = "date_birth")
-	@Past(message = "The date must be past")
-	@EmployeeAgeConstraint (message = "The employee must be over 18")
+	@EmployeeAgeConstraint(message = "The employee must be over 18")
+	@ApiModelProperty(value = "date birth of the employee")
 	private LocalDate dateBirth;
 
 	public static class Builder {
@@ -69,7 +75,7 @@ public class Employee {
 		private String jobTitle;
 		private Gender gender;
 		private LocalDate dateBirth;
-		
+
 		public Builder setEmployeeId(long employeeId) {
 			this.employeeId = employeeId;
 			return this;
@@ -99,8 +105,9 @@ public class Employee {
 			this.gender = gender;
 			return this;
 		}
+
 		public Builder setDateBirth(LocalDate dateBirth) {
-			this.dateBirth =dateBirth;
+			this.dateBirth = dateBirth;
 			return this;
 		}
 
@@ -109,5 +116,4 @@ public class Employee {
 		}
 	}
 
-	
 }

@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.mastery.java.task.dao.EmployeeDao;
 import com.mastery.java.task.dto.Employee;
+import com.mastery.java.task.service.exception.EmployeeServiceBadRequestException;
 import com.mastery.java.task.service.exception.EmployeeServiceNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -57,37 +57,42 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Iterable<Employee> findAllByFirstName(String firstName) {
-
-		Iterable<Employee> employeefindAllByFirstName = StreamSupport.stream(employeeDao.findAll().spliterator(), false)
-				.collect(Collectors.toList())
-				.stream()
-				.filter(c -> firstName.equals(c.getFirstName()))
-				.collect(Collectors.toList());
-
-		if (!employeefindAllByFirstName.iterator().hasNext()) {
-			log.error("Employee with firstName={} is not found",firstName);
-			throw new EmployeeServiceNotFoundException(String.format("Employee with firstName=%s is not found", firstName));
+	public List<Employee> findByName(String firstName, String lastName) {
+		
+		List<Employee> employees = new ArrayList<>();
+		
+		if (firstName != null && lastName != null) {
+			 
+			employees=employeeDao.findEmployeeByFullName(firstName, lastName);
+			
+			if (employees.size() <= 0) {
+				log.error("Employee with first name = {} and last name = {} is not found",firstName, lastName);
+				throw new EmployeeServiceNotFoundException(String.format("Employee with firstName=%s and lastName=%s is not found", firstName,  lastName));
+			}			
+			return employees; 
 		}
-
-		return employeefindAllByFirstName;
-	}
-
-	@Override
-	public Iterable<Employee> findAllByLastName(String lastName) {
-
-		Iterable<Employee> employeefindAllByLastName = StreamSupport.stream(employeeDao.findAll().spliterator(), false)
-				.collect(Collectors.toList())
-				.stream()
-				.filter(c -> lastName.equals(c.getLastName()))
-				.collect(Collectors.toList());
-
-		if (!employeefindAllByLastName.iterator().hasNext()) {
-			log.error("Employee with lastName={} is not found",lastName);
-			throw new EmployeeServiceNotFoundException(String.format("Employee with lastName=%s is not found", lastName));
+		if (firstName != null && lastName == null) {
+			employees=employeeDao.findEmployeeByFirstName(firstName);
+			if (employees.size() <= 0) {
+				log.error("Employee with first name={} is not found",firstName);
+				throw new EmployeeServiceNotFoundException(String.format("Employee with firstName=%s is not found", firstName));
+			}
+			
+			return employees;
 		}
-
-		return employeefindAllByLastName;
+		if (lastName != null && firstName == null) {
+			employees=employeeDao.findEmployeeByLastName(lastName);
+			if (employees.size() <= 0) {
+				log.error("Employee with last name={} is not found",lastName);
+				throw new EmployeeServiceNotFoundException(String.format("Employee with lastName=%s is not found", lastName));
+			}
+			return employees;
+		}
+		if (firstName == null && lastName == null) {
+			throw new EmployeeServiceBadRequestException((String.format("Name and surname can't be empty")));
+		}
+	
+		return employees;
 	}
 
 }

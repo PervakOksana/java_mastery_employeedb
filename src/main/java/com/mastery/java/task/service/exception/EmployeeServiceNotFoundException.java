@@ -1,8 +1,5 @@
 package com.mastery.java.task.service.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 public class EmployeeServiceNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 

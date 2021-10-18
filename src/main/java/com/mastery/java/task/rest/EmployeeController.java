@@ -7,68 +7,96 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import com.mastery.java.task.dto.Employee;
 import com.mastery.java.task.service.EmployeeServiceImpl;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import java.util.List;
 import javax.validation.Valid;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/employees")
+@Api("Operations with employees in aplication")
 public class EmployeeController {
-	 
-	private static final Logger log = LogManager.getLogger(EmployeeController.class);
 
 	@Autowired
 	private EmployeeServiceImpl employeeService;
 
+
 	@GetMapping
-	public ResponseEntity<Iterable<Employee>> getAllEmployees() {
-		log.info("Trying to get employee list");		
-		return ResponseEntity.ok().body(employeeService.getAll());
+	@ApiOperation(value = "Getting employee list", response = Iterable.class)
+	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 400, message = "The request was bad"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
+			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
+	public Iterable<Employee> getAllEmployees() {
+		log.info("Trying to get employee list");
+		return employeeService.getAll();
 	}
 
 	@GetMapping("/{employeeId}")
-	public ResponseEntity<Employee> getEmployeeById(@Valid @PathVariable long employeeId) {
-		
-		System.out.println("getEmployeeById");
+	@ApiOperation(value = "Getting employee by id", response = Employee.class)
+	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 400, message = "The request was bad"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
+			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
+	public Employee getEmployeeById(@PathVariable long employeeId) {
 		log.info("Trying to get employee by id {}", employeeId);
-		return ResponseEntity.ok().body(employeeService.getById(employeeId).get());
+		return employeeService.getById(employeeId).get();
 	}
-	
-	@GetMapping("/first/{firstName}")
-	public ResponseEntity<Iterable<Employee>> getEmployeeByFirstName(@Valid @PathVariable String firstName) {
-		log.info("Trying to find employee by first name {}", firstName);
-		return ResponseEntity.ok().body(employeeService.findAllByFirstName(firstName));
-	}
-	
-	@GetMapping("/last/{lastName}")
-	public ResponseEntity<Iterable<Employee>> getEmployeeByLastName(@Valid @PathVariable String lastName) {
-		log.info("Trying to find employee by last name {}", lastName);
-		return ResponseEntity.ok().body(employeeService.findAllByLastName(lastName));
+
+	@GetMapping("/find")
+	@ApiOperation(value = "Getting employee by first name and by last name", response = List.class)
+	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 400, message = "The request was bad"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
+			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
+	public List<Employee> getEmployeeByName(@RequestParam(required = false) String name, @RequestParam(required = false) String surname) {
+		log.info("Trying to find employee by first name {} and by last name {}", name, surname);
+		return employeeService.findByName(name, surname);
 	}
 
 	@PostMapping
-	public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
-		log.info("Trying to post {}", employee.toString());
-		return ResponseEntity.status(201).body(employeeService.create(employee));	 
+	@ResponseStatus(code = HttpStatus.CREATED)
+	@ApiOperation(value = "Creating employee", response = Employee.class)
+	@ApiResponses(value = {@ApiResponse(code = 201, message = "Successfully created"),
+			@ApiResponse(code = 400, message = "The request was bad"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
+			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
+	public Employee createEmployee(@Valid @RequestBody Employee employee) {
+		log.info("Trying to post {}", employee);
+		return employeeService.create(employee);
 	}
 
 	@PutMapping("/{employeeId}")
-	public ResponseEntity<Employee> updateEmployee(@Valid @PathVariable  long employeeId,
-			 @RequestBody @Valid Employee employee) {
+	@ApiOperation(value = "Updating employee", response = Employee.class)
+	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 400, message = "The request was bad"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
+			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
+	public Employee updateEmployee(@PathVariable long employeeId, @Valid @RequestBody Employee employee) {
 		log.info("Trying to put employee by id {}", employeeId);
-		return ResponseEntity.ok().body(employeeService.update(employeeId, employee));
-		
+		return employeeService.update(employeeId, employee);
+
 	}
 
 	@DeleteMapping("/{employeeId}")
-	public ResponseEntity<Void> deleteEmployee(@Valid @PathVariable long employeeId) {
+	@ApiOperation(value = "Deleting employee")
+	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 400, message = "The request was bad"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
+			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
+	public void deleteEmployee(@PathVariable long employeeId) {
 		log.info("Trying to delete employee by id {}", employeeId);
 		employeeService.delete(employeeId);
-		return ResponseEntity.ok().build();
 	}
 }

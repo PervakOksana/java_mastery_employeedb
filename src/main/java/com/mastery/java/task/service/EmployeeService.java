@@ -1,24 +1,22 @@
 package com.mastery.java.task.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.mastery.java.task.dto.Employee;
 
 public interface EmployeeService {
 	
-	Iterable<Employee> getAll();
+	public Iterable<Employee> getAll();
 
-	Optional<Employee> getById(long id);
+	public Optional<Employee> getById(long id);
 
-	Employee create(Employee employee);
+	public Employee create(Employee employee);
 
-	Employee update(long id, Employee employee);
+	public Employee update(long id, Employee employee);
 
-	void delete(long id);
+	public void delete(long id);
 	
-	Iterable<Employee> findAllByFirstName(String firstName);
+	public List<Employee> findByName(String firstName,  String lastName);
 	
-	Iterable<Employee> findAllByLastName(String lastName);
-
-
 }
