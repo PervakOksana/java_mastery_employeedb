@@ -26,6 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping(value = "/employees")
 @Api("Operations with employees in aplication")
+@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
+		@ApiResponse(code = 400, message = "The request was bad"),
+		@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
+		@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 public class EmployeeController {
 
 	@Autowired
@@ -34,10 +38,6 @@ public class EmployeeController {
 
 	@GetMapping
 	@ApiOperation(value = "Getting employee list", response = Iterable.class)
-	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
-			@ApiResponse(code = 400, message = "The request was bad"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
-			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 	public Iterable<Employee> getAllEmployees() {
 		log.info("Trying to get employee list");
 		return employeeService.getAll();
@@ -45,10 +45,6 @@ public class EmployeeController {
 
 	@GetMapping("/{employeeId}")
 	@ApiOperation(value = "Getting employee by id", response = Employee.class)
-	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
-			@ApiResponse(code = 400, message = "The request was bad"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
-			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 	public Employee getEmployeeById(@PathVariable long employeeId) {
 		log.info("Trying to get employee by id {}", employeeId);
 		return employeeService.getById(employeeId).get();
@@ -56,10 +52,6 @@ public class EmployeeController {
 
 	@GetMapping("/find")
 	@ApiOperation(value = "Getting employee by first name and by last name", response = List.class)
-	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
-			@ApiResponse(code = 400, message = "The request was bad"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
-			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 	public List<Employee> getEmployeeByName(@RequestParam(required = false) String name, @RequestParam(required = false) String surname) {
 		log.info("Trying to find employee by first name {} and by last name {}", name, surname);
 		return employeeService.findByName(name, surname);
@@ -68,10 +60,6 @@ public class EmployeeController {
 	@PostMapping
 	@ResponseStatus(code = HttpStatus.CREATED)
 	@ApiOperation(value = "Creating employee", response = Employee.class)
-	@ApiResponses(value = {@ApiResponse(code = 201, message = "Successfully created"),
-			@ApiResponse(code = 400, message = "The request was bad"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
-			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 	public Employee createEmployee(@Valid @RequestBody Employee employee) {
 		log.info("Trying to post {}", employee);
 		return employeeService.create(employee);
@@ -79,10 +67,6 @@ public class EmployeeController {
 
 	@PutMapping("/{employeeId}")
 	@ApiOperation(value = "Updating employee", response = Employee.class)
-	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
-			@ApiResponse(code = 400, message = "The request was bad"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
-			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 	public Employee updateEmployee(@PathVariable long employeeId, @Valid @RequestBody Employee employee) {
 		log.info("Trying to put employee by id {}", employeeId);
 		return employeeService.update(employeeId, employee);
@@ -91,10 +75,6 @@ public class EmployeeController {
 
 	@DeleteMapping("/{employeeId}")
 	@ApiOperation(value = "Deleting employee")
-	@ApiResponses(value = {@ApiResponse(code = 200, message = "Successfully retrieved list"),
-			@ApiResponse(code = 400, message = "The request was bad"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
-			@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 	public void deleteEmployee(@PathVariable long employeeId) {
 		log.info("Trying to delete employee by id {}", employeeId);
 		employeeService.delete(employeeId);
