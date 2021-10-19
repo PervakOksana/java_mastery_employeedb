@@ -1,4 +1,4 @@
-package com.mastery.java.task.rest.validation;
+package com.mastery.java.task.dto.validation;
 
 import java.time.LocalDate;
 import javax.validation.ConstraintValidator;

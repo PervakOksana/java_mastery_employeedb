@@ -26,7 +26,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee update(long id, Employee employee) {
-
 		if (!employeeDao.existsById(id)) {
 			log.error("Employee is not found, id=" + id);
 			throw new EmployeeServiceNotFoundException("Employee is not found, id=" + id);

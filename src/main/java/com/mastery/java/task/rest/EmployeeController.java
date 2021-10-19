@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 		@ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
 		@ApiResponse(code = 500, message = "Something went wrong, entry was not added") })
 public class EmployeeController {
-
+	
 	@Autowired
 	private EmployeeServiceImpl employeeService;
 
