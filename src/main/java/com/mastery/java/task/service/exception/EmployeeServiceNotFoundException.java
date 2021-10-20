@@ -6,12 +6,15 @@ public class EmployeeServiceNotFoundException extends RuntimeException {
 	public EmployeeServiceNotFoundException() {
 		super();
 	}
+
 	public EmployeeServiceNotFoundException(String message) {
 		super(message);
 	}
+
 	public EmployeeServiceNotFoundException(Throwable e) {
 		super(e);
 	}
+
 	public EmployeeServiceNotFoundException(String message, Throwable e) {
 		super(message, e);
 	}

@@ -36,7 +36,6 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeServiceImpl employeeService;
 
-
 	@GetMapping
 	@ApiOperation(value = "Getting employee list", response = Iterable.class)
 	public Iterable<Employee> getAllEmployees() {
