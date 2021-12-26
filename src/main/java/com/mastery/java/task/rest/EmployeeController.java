@@ -60,7 +60,6 @@ public class EmployeeController {
 	}
 
 	@PostMapping
-	@ResponseStatus(code = HttpStatus.CREATED)
 	@ApiOperation(value = "Creating employee", response = Employee.class)
 	public Optional<Employee> createEmployee(@Valid @RequestBody Employee employee) {
 		log.info("Trying to post {}", employee);
