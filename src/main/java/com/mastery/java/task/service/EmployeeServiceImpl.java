@@ -9,6 +9,8 @@ import com.mastery.java.task.service.exception.EmployeeServiceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,13 +27,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee update(long id, Employee employee) {
+	public Optional<Employee> update(long id, Employee employee) {
 		if (!employeeDao.existsById(id)) {
 			log.error("Employee is not found, id {}", id);
 			throw new EmployeeServiceNotFoundException("Employee is not found, id=" + id);
 		}
 		employee.setEmployeeId(id);
-		return employeeDao.save(employee);
+		return Optional.of(employeeDao.save(employee));
 	}
 
 	@Override
@@ -50,44 +52,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee create(Employee employee) {
-		return employeeDao.save(employee);
+	public Optional<Employee> create(Employee employee) {
+		return Optional.of(employeeDao.save(employee));
 	}
 
 	@Override
-	public List<Employee> findByName(String firstName, String lastName) {
-		List<Employee> employees = new ArrayList<>();
-		if (firstName != null && lastName != null) {
-			employees = employeeDao.findEmployeeByFullName(firstName, lastName);
-			if (employees.size() <= 0) {
-				log.error("Employee with first name = {} and last name = {} is not found", firstName, lastName);
-				throw new EmployeeServiceNotFoundException(
-						String.format("Employee with firstName=%s and lastName=%s is not found", firstName, lastName));
-			}
+	public Iterable <Employee> findByName(String firstName, String lastName) {
+		log.info("Employee, firstName {}, lastName  {}", firstName+"%", lastName+"%");
+		Iterable<Employee> employees = employeeDao.findEmployeeByFirstNameContainingAndLastNameContaining(firstName, lastName); 		
+		if (employees.iterator().hasNext()) {
 			return employees;
-		}
-		if (firstName != null && lastName == null) {
-			employees = employeeDao.findEmployeeByFirstName(firstName);
-			if (employees.size() <= 0) {
-				log.error("Employee with first name={} is not found", firstName);
-				throw new EmployeeServiceNotFoundException(
-						String.format("Employee with firstName=%s is not found", firstName));
-			}
-			return employees;
-		}
-		if (lastName != null && firstName == null) {
-			employees = employeeDao.findEmployeeByLastName(lastName);
-			if (employees.size() <= 0) {
-				log.error("Employee with last name={} is not found", lastName);
-				throw new EmployeeServiceNotFoundException(
-						String.format("Employee with lastName=%s is not found", lastName));
-			}
-			return employees;
-		}
-		if (firstName == null && lastName == null) {
-			throw new EmployeeServiceBadRequestException((String.format("Name and surname can't be empty")));
-		}
-		return employees;
+		} else {
+			log.error("Employee is not found, firstName {}, lastName  {}", firstName, lastName);
+			throw new EmployeeServiceNotFoundException("Employee is not found, firstName = " + firstName+ ", firstName = " +lastName);
+		}		
 	}
-
 }

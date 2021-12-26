@@ -18,9 +18,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -49,10 +51,10 @@ public class EmployeeController {
 		log.info("Trying to get employee by id {}", employeeId);
 		return employeeService.getById(employeeId).get();
 	}
-
+//find?name=Kat&surname=new
 	@GetMapping("/find")
 	@ApiOperation(value = "Getting employee by first name and by last name", response = List.class)
-	public List<Employee> getEmployeeByName(@RequestParam(required = false) String name, @RequestParam(required = false) String surname) {
+	public Iterable <Employee> getEmployeeByName(@RequestParam(required = false, defaultValue = "") String name, @RequestParam(required = false, defaultValue = "") String surname) {
 		log.info("Trying to find employee by first name {} and by last name {}", name, surname);
 		return employeeService.findByName(name, surname);
 	}
@@ -60,14 +62,14 @@ public class EmployeeController {
 	@PostMapping
 	@ResponseStatus(code = HttpStatus.CREATED)
 	@ApiOperation(value = "Creating employee", response = Employee.class)
-	public Employee createEmployee(@Valid @RequestBody Employee employee) {
+	public Optional<Employee> createEmployee(@Valid @RequestBody Employee employee) {
 		log.info("Trying to post {}", employee);
 		return employeeService.create(employee);
 	}
 
 	@PutMapping("/{employeeId}")
 	@ApiOperation(value = "Updating employee", response = Employee.class)
-	public Employee updateEmployee(@PathVariable long employeeId, @Valid @RequestBody Employee employee) {
+	public Optional<Employee> updateEmployee(@PathVariable long employeeId, @Valid @RequestBody Employee employee) {
 		log.info("Trying to put employee by id {}", employeeId);
 		return employeeService.update(employeeId, employee);
 
