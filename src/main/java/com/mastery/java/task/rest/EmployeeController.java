@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import com.mastery.java.task.dto.Employee;
 import com.mastery.java.task.service.EmployeeServiceImpl;
 import io.swagger.annotations.Api;
@@ -19,12 +18,14 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
+@Validated
 @Slf4j
 @RestController
 @RequestMapping(value = "/employees")
@@ -38,23 +39,16 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeServiceImpl employeeService;
 
-	@GetMapping
-	@ApiOperation(value = "Getting employee list", response = Iterable.class)
-	public Iterable<Employee> getAllEmployees() {
-		log.info("Trying to get employee list");
-		return employeeService.getAll();
-	}
-
 	@GetMapping("/{employeeId}")
 	@ApiOperation(value = "Getting employee by id", response = Employee.class)
-	public Employee getEmployeeById(@PathVariable long employeeId) {
+	public Employee getEmployeeById(@PathVariable @Min(1) long employeeId) {
 		log.info("Trying to get employee by id {}", employeeId);
 		return employeeService.getById(employeeId).get();
 	}
 //find?name=Kat&surname=new
-	@GetMapping("/find")
+	@GetMapping
 	@ApiOperation(value = "Getting employee by first name and by last name", response = List.class)
-	public Iterable <Employee> getEmployeeByName(@RequestParam(required = false, defaultValue = "") String name, @RequestParam(required = false, defaultValue = "") String surname) {
+	public Iterable <Employee> getEmployeeByName(@RequestParam(required = false, defaultValue = "") @Pattern(regexp = "^[a-zA-Z]*$") String name, @RequestParam(required = false, defaultValue = "") @Pattern(regexp = "^[a-zA-Z]*$") String surname) {
 		log.info("Trying to find employee by first name {} and by last name {}", name, surname);
 		return employeeService.findByName(name, surname);
 	}
@@ -68,7 +62,7 @@ public class EmployeeController {
 
 	@PutMapping("/{employeeId}")
 	@ApiOperation(value = "Updating employee", response = Employee.class)
-	public Optional<Employee> updateEmployee(@PathVariable long employeeId, @Valid @RequestBody Employee employee) {
+	public Optional<Employee> updateEmployee(@PathVariable @Min(1) long employeeId, @Valid @RequestBody Employee employee) {
 		log.info("Trying to put employee by id {}", employeeId);
 		return employeeService.update(employeeId, employee);
 
@@ -76,7 +70,7 @@ public class EmployeeController {
 
 	@DeleteMapping("/{employeeId}")
 	@ApiOperation(value = "Deleting employee")
-	public void deleteEmployee(@PathVariable long employeeId) {
+	public void deleteEmployee(@PathVariable @Min(1) long employeeId) {
 		log.info("Trying to delete employee by id {}", employeeId);
 		employeeService.delete(employeeId);
 	}

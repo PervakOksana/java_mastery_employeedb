@@ -3,6 +3,9 @@ package com.mastery.java.task.rest;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -68,6 +71,13 @@ public class ControllerAdvisor  {
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ExceptionInfo handleNoHandlerFoundException(NoHandlerFoundException ex) {
 		log.error("NoHandlerFoundException occurred: " + ex.getMessage(), ex);
+		return new ExceptionInfo.Builder().messages(ex.getMessage()).timestamp(new Date()).build();
+	}
+	
+	@ExceptionHandler(ConstraintViolationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionInfo handleConstraintViolationException(ConstraintViolationException ex) {
+		log.error("ConstraintViolationException occurred: " + ex.getMessage(), ex);
 		return new ExceptionInfo.Builder().messages(ex.getMessage()).timestamp(new Date()).build();
 	}
 
